@@ -1,5 +1,7 @@
 use ndarray::{prelude::*, Data, OwnedRepr};
 
+use crate::coreset::NChunks;
+
 use crate::metricdata::{MetricData, Subset};
 
 pub struct AngularData<S: Data<Elem=f32>> {
@@ -46,4 +48,19 @@ impl<S: Data<Elem = f32>> Subset for AngularData<S> {
     }
 }
 
-// TODO: still left to implement NChunks traits
+impl<S: ndarray::Data<Elem = f32>> NChunks for AngularData<S> {
+    type Output<'slf> = AngularData<ndarray::ViewRepr<&'slf f32>> where S: 'slf;
+
+    fn nchunks(&self, num_chunks: usize) -> impl Iterator<Item = Self::Output<'_>> {
+        let points = self.data.nchunks(num_chunks);
+        let norms = self.norms.nchunks(num_chunks);
+        points.zip(norms).map(|(p, n)| AngularData {
+            data: p,
+            norms: n.to_owned(),
+        })
+    }
+
+    fn nchunks_size(&self, num_chunks: usize) -> usize {
+        (self.num_points() as f64 / num_chunks as f64).ceil() as usize
+    }
+}
