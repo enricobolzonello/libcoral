@@ -1,6 +1,6 @@
-use ndarray::{prelude::*, Data};
+use ndarray::{prelude::*, Data, OwnedRepr};
 
-use crate::metricdata::MetricData;
+use crate::metricdata::{MetricData, Subset};
 
 pub struct AngularData<S: Data<Elem=f32>> {
     data: ArrayBase<S, Ix2>,
@@ -38,4 +38,12 @@ impl<S: Data<Elem = f32>> MetricData for AngularData<S> {
     }
 }
 
-// TODO: still left to implement Subset and NChunks traits
+impl<S: Data<Elem = f32>> Subset for AngularData<S> {
+    type Out = AngularData<OwnedRepr<f32>>;
+    fn subset<I: IntoIterator<Item = usize>>(&self, indices: I) -> Self::Out {
+        let indices: Vec<usize> = indices.into_iter().collect();
+        AngularData::new(self.data.select(Axis(0), &indices))
+    }
+}
+
+// TODO: still left to implement NChunks traits
