@@ -395,7 +395,7 @@ impl NChunks for () {
 
 #[cfg(test)]
 mod test {
-    use crate::{metricdata::EuclideanData, test::make_blobs};
+    use crate::{metricdata::euclideandata::EuclideanData, test::make_blobs};
 
     use super::CoresetBuilder;
 

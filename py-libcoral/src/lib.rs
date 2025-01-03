@@ -1,3 +1,4 @@
+use euclideandata::EuclideanData;
 use libcoral::{
     coreset::{CoresetBuilder, FittedCoreset, NChunks},
     diversity::{DiversityKind, DiversityMaximization},
